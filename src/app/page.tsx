@@ -1,101 +1,169 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { toast } from "sonner";
+import { Loader2, FileText } from "lucide-react";
+import axios from "axios";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+
+import { renderMarkmap } from "@/lib/markmap";
+import { Markmap } from "markmap-view";
+import { DemoMarkmap } from "@/components/DemoMarkmap";
+import { ErrorMessage } from "@/components/ErrorMessage";
+
+// Form validation schema
+const formSchema = z.object({
+  topic: z.string().min(3, {
+    message: "Topic must be at least 3 characters.",
+  }),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [markdown, setMarkdown] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+  const markmapRef = useRef<HTMLDivElement>(null);
+  const markmapInstanceRef = useRef<Markmap | null>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // Initialize form
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      topic: "",
+    },
+  });
+
+  // Handle form submission
+  const onSubmit = async (values: FormValues) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await axios.post('/api/generate', { topic: values.topic });
+      setMarkdown(response.data.markdown);
+      toast.success("Markdown generated successfully!");
+    } catch (error) {
+      console.error("Error:", error);
+      setError("Failed to generate markdown. Please check your API key and try again.");
+      toast.error("Failed to generate markdown. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Render markmap when markdown changes
+  useEffect(() => {
+    if (markdown && markmapRef.current) {
+      try {
+        // Clear any previous content
+        if (markmapRef.current.firstChild) {
+          markmapRef.current.innerHTML = '';
+        }
+        
+        // Render the markmap after a delay to ensure the DOM is ready
+        setTimeout(() => {
+          if (markmapRef.current) {
+            // Create new markmap
+            markmapInstanceRef.current = renderMarkmap(markdown, markmapRef.current);
+            console.log("Markmap rendered successfully");
+          }
+        }, 500);
+      } catch (err) {
+        console.error("Error rendering markmap:", err);
+        setError("Failed to render markmap. Please check your markdown format.");
+      }
+    }
+  }, [markdown]);
+
+  // Copy markdown to clipboard
+  const copyMarkdown = () => {
+    navigator.clipboard.writeText(markdown);
+    toast.success("Markdown copied to clipboard!");
+  };
+
+  return (
+    <main className="container mx-auto py-8 px-4">
+      <h1 className="text-3xl font-bold text-center mb-8">MarkMaps - AI-Powered Mind Mapping</h1>
+      
+      {error && (
+        <div className="mb-8">
+          <ErrorMessage 
+            message={error} 
+            retry={() => setError(null)}
+          />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      )}
+      
+      <div className="grid grid-cols-1 gap-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Generate Mind Map</CardTitle>
+            <CardDescription>
+              Enter a topic to generate an interactive mind map using Claude 3.7 Sonnet
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="topic"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Topic</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., Quantum Computing" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" disabled={isLoading} className="w-full">
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    "Generate Mind Map"
+                  )}
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
+
+      {markdown ? (
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle>Mind Map Visualization</CardTitle>
+            <CardDescription>
+              Interactive mind map generated from your topic
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div 
+              ref={markmapRef} 
+              className="w-full border rounded-md bg-white overflow-hidden"
+              style={{ height: "calc(100vh - 300px)", minHeight: "700px" }}
+            />
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="mt-8">
+          <DemoMarkmap />
+        </div>
+      )}
+    </main>
   );
 }

@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MarkMaps - AI-Powered Mind Mapping
+
+MarkMaps is a Next.js application that generates comprehensive markdown documents on any topic using Claude 3.7 Sonnet via OpenRouter, and visualizes them as interactive mind maps.
+
+## Features
+
+- Generate well-structured markdown documents on any topic using Claude 3.7 Sonnet
+- Visualize markdown as interactive mind maps using the markmap library
+- Edit generated markdown and see real-time updates to the mind map
+- Copy markdown to clipboard for use in other applications
+- Modern UI built with Tailwind CSS and shadcn/ui components
+
+## Tech Stack
+
+- **Next.js** - React framework with App Router
+- **TypeScript** - Type-safe JavaScript
+- **Tailwind CSS** - Utility-first CSS framework
+- **shadcn/ui** - Reusable UI components
+- **Lucide React** - Beautiful icons
+- **Markmap** - Markdown visualization library
+- **OpenRouter API** - Access to Claude 3.7 Sonnet AI model
+- **React Hook Form** - Form validation
+- **Zod** - Schema validation
+- **Sonner** - Toast notifications
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js 18.x or later
+- OpenRouter API key
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/markmaps.git
+   cd markmaps
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-## Learn More
+3. Create a `.env.local` file in the root directory and add your OpenRouter API key:
+   ```
+   OPENROUTER_API_KEY=your_api_key_here
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Usage
 
-## Deploy on Vercel
+1. Enter a topic in the input field
+2. Click "Generate Markdown"
+3. View and edit the generated markdown in the text area
+4. See the mind map visualization update in real-time
+5. Copy the markdown to clipboard if needed
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgements
+
+- [Claude 3.7 Sonnet](https://www.anthropic.com/claude) by Anthropic
+- [OpenRouter](https://openrouter.ai/) for API access
+- [markmap](https://markmap.js.org/) for mind map visualization
+- [shadcn/ui](https://ui.shadcn.com/) for UI components
