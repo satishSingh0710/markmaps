@@ -13,7 +13,7 @@ export function Header() {
         </Link>
         <nav className="flex items-center gap-4">
           <Button variant="ghost" size="sm" asChild>
-            <Link href="https://github.com/yourusername/markmaps" target="_blank" rel="noopener noreferrer">
+            <Link href="https://github.com/satishsingh21/markmaps" target="_blank" rel="noopener noreferrer">
               <GitHubLogoIcon className="mr-2 h-4 w-4" />
               GitHub
             </Link>

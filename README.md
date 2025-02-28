@@ -34,7 +34,7 @@ MarkMaps is a Next.js application that generates comprehensive markdown document
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/markmaps.git
+   git clone https://github.com/satishsingh21/markmaps.git
    cd markmaps
    ```
 
